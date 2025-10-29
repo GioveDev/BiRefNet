@@ -134,7 +134,22 @@ class MyData(data.Dataset):
         # At present, we use fixed sizes in inference, instead of consistent dynamic size with training.
         if self.is_train:
             if config.dynamic_size is None:
+                # --- FORCE resize to fixed size ---
+                import cv2
+                w, h = config.size  # config.size is (width, height)
+                image = np.array(image)
+                label = np.array(label)
+
+                if image.shape[:2] != (h, w):
+                    image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LINEAR)
+                if label.shape[:2] != (h, w):
+                    label = cv2.resize(label, (w, h), interpolation=cv2.INTER_NEAREST)
+
+                image = Image.fromarray(image)
+                label = Image.fromarray(label)
+
                 image, label = self.transform_image(image), self.transform_label(label)
+
         else:
             size_div_32 = (int(image.size[0] // 32 * 32), int(image.size[1] // 32 * 32))
             if image.size != size_div_32:

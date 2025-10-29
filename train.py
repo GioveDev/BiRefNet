@@ -60,7 +60,7 @@ else:
         device = config.device
 
 if config.rand_seed:
-    set_seed(config.rand_seed + device)
+    set_seed(config.rand_seed)
 
 epoch_st = 1
 # make dir for ckpt
